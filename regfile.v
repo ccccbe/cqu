@@ -22,13 +22,13 @@
 
 module regfile(
 	input wire clk,
-	input wire we3,
-	input wire[4:0] ra1,ra2,wa3,
-	input wire[31:0] wd3,
-	output wire[31:0] rd1,rd2
+	input wire we3,//写回信号
+	input wire[4:0] ra1,ra2,wa3,//rs，rt，rd
+	input wire[31:0] wd3,//写回结果
+	output wire[31:0] rd1,rd2//从寄存器中取值
     );
 
-	reg [31:0] rf[31:0];
+	reg [31:0] rf[31:0];//32个通用寄存器
 
 	always @(negedge clk) begin
 		if(we3) begin

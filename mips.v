@@ -33,6 +33,9 @@ module mips(
 	wire regdstE,alusrcE,pcsrcD,memtoregE,memtoregM,memtoregW,
 			regwriteE,regwriteM,regwriteW;
 	wire [7:0] alucontrolE;
+	
+	wire [3:0] memwriteM,memwrite2M;
+	
 	wire flushE,equalD;
 
 	controller c(
@@ -74,6 +77,7 @@ module mips(
 		regwriteM,
 		aluoutM,writedataM,
 		readdataM,
+		memwrite2M,
 		//writeback stage
 		memtoregW,
 		regwriteW
