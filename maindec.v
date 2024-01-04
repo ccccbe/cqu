@@ -20,10 +20,6 @@ module maindec(
 	// memtoreg
 	always @(*) begin
 		case (op)
-		`EXE_LB,
-		`EXE_LBU,
-		`EXE_LH,
-		`EXE_LHU,
 		`EXE_LW : memtoreg <= 1'b1;
 		default: memtoreg <= 1'b0;
 		endcase
@@ -32,8 +28,6 @@ module maindec(
 	// memwrite
 	always @(*) begin
 		case (op)
-		`EXE_SB,
-		`EXE_SH,
 		`EXE_SW : memwrite <= 1'b1;
 		default: memwrite <= 1'b0;
 		endcase
@@ -47,19 +41,18 @@ module maindec(
 	// alusrc
 	always @(*) begin
 		case (op)
-		`EXE_LB,
-		`EXE_LBU,
-		`EXE_LH,
-		`EXE_LHU,
 		`EXE_LW,
-		`EXE_SB,
-		`EXE_SH,
 		`EXE_SW,
-		`EXE_ADDI,
-		`EXE_ANDI,
+
+  		`EXE_ANDI,
 		`EXE_ORI,
 		`EXE_XORI,
-		`EXE_LUI: alusrc <= 1'b1;
+		`EXE_LUI,
+
+		`EXE_ADDI,
+		`EXE_ADDIU,
+		`EXE_SLTI,
+		`EXE_SLTIU: alusrc <= 1'b1;
 		default: alusrc <= 1'b0;
 		endcase
 	end
@@ -67,6 +60,7 @@ module maindec(
 	// regwrite
 	always @(*) begin
 		case (op)
+		//逻辑
 		`EXE_NOP,
 		`EXE_AND,
 		`EXE_OR,
@@ -77,18 +71,35 @@ module maindec(
 		`EXE_XORI,
 		`EXE_LUI,
 
+
+		//移位
+
 		`EXE_SLL,
-		`EXE_LB,
-		`EXE_LBU,
-		`EXE_LH,
-		`EXE_LHU,
+		`EXE_SLLV,
+		`EXE_SRL,
+		`EXE_SRLV,
+		`EXE_SRA,
+		`EXE_SRAV,
+
+		//访存
 		`EXE_LW,
 
+
+		//算术运算
 		`EXE_ADD,
-		`EXE_ADDI,
 		`EXE_ADDU,
+
+		`EXE_ADDI,
+		`EXE_ADDIU,
+		
 		`EXE_SUB,
-		`EXE_SUBU
+		`EXE_SUBU,
+
+		`EXE_SLT,
+		`EXE_SLTU,
+
+		`EXE_SLTI,
+		`EXE_SLTIU
 		: regwrite <= 1'b1;
 		default: regwrite <= 1'b0;
 		endcase
