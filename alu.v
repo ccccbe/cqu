@@ -6,7 +6,10 @@ module alu(
 	input wire[31:0] a,b,
 	input wire[7:0] sel,
 	input wire[4:0] sa,
-	output reg [31:0] result
+	input wire [31:0] hi_i,lo_i,
+	output reg [31:0] result,
+	output reg [31:0] hi,lo,
+	output reg overflow
     );
 
 	always @(*) begin
@@ -29,7 +32,7 @@ module alu(
 			`EXE_SUBU_OP:result <= a - b;
 			`EXE_ADDI_OP:result <= a + b;
 			`EXE_ADDIU_OP:result <= a + b;
-
+			
 			`EXE_SLT_OP  :result <=($signed(a)< $signed(b))? 1 : 0 ;
 			`EXE_SLTU_OP :result <=(a < b)? 1 : 0 ;
 			`EXE_SLTI_OP :result <=($signed(a)< $signed(b))? 1 : 0 ;
@@ -44,10 +47,37 @@ module alu(
 			`EXE_SLLV_OP:result <= b << a[4:0]; //移位src a
             `EXE_SRLV_OP:result <= b >> a[4:0];
             `EXE_SRAV_OP:result <= $signed(b) >>> a[4:0];
+			`EXE_MFHI_OP :result <= hi_i;
+			`EXE_MFLO_OP :result <= lo_i;
 
+			//跳转指令
+			`EXE_JAL_OP:result <= a;
+			`EXE_JALR_OP:result<=a;
 
 			default: result <= 32'b0;
 		endcase
+	end
+	always @(*) begin
+		case (sel)
+			`EXE_MULT_OP :{hi,lo}<= $signed(a)*$signed(b);
+ 			`EXE_MULTU_OP:{hi,lo}<=a * b;
+			`EXE_MTHI_OP:hi<=a;
+        	`EXE_MTLO_OP:lo<=a;
+		endcase
+
+	end
+
+	always @(*) begin
+		case (sel)
+			`EXE_ADD_OP,`EXE_ADDI_OP 
+			: overflow <= a[31] & b[31] & ~result[31] | ~a[31] & ~b[31] & result[31];
+			`EXE_SUB_OP
+			: overflow <= ((a[31]&&!b[31])&&!result[31])||((!a[31]&&b[31])&&result[31]);
+			`EXE_ADDU_OP,`EXE_ADDIU_OP
+			:overflow <= 0;
+			`EXE_SUBU_OP:overflow <= 0;
+			default: overflow <= 0;
+        endcase
 	end
 
 endmodule

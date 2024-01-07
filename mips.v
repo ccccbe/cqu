@@ -29,29 +29,30 @@ module mips(
 	input wire[31:0] readdataM 
     );
 	
-	wire [5:0] opD,functD;
-	wire regdstE,alusrcE,pcsrcD,memtoregE,memtoregM,memtoregW,
+	wire [31:0] instrD;
+	wire regdstE,alusrcE,pcsrcD,memtoregE,memtoregM,memtoregW,branchD,jumpD,jrD,
 			regwriteE,regwriteM,regwriteW;
 	wire [7:0] alucontrolE;
-	wire flushE,equalD;
-
+	wire flushE,equalD,stallD,stallE,stallM;
+	wire [1:0] hregwriteE,hregwriteM,hregwriteW;
 	controller c(
 		clk,rst,
 		//decode stage
-		opD,functD,
-		pcsrcD,branchD,equalD,jumpD,
+		instrD,
+		pcsrcD,branchD,jumpD,jrD,
 		
 		//execute stage
-		flushE,
+		flushE,equalD,stallD,stallE,
 		memtoregE,alusrcE,
 		regdstE,regwriteE,	
 		alucontrolE,
 
 		//mem stage
-		memtoregM,memwriteM,
+		stallM,memtoregM,memwriteM,
 		regwriteM,
 		//write back stage
-		memtoregW,regwriteW
+		memtoregW,regwriteW,
+		hregwriteE,hregwriteM,hregwriteW
 		);
 	datapath dp(
 		clk,rst,
@@ -60,23 +61,24 @@ module mips(
 		instrF,
 		//decode stage
 		pcsrcD,branchD,
-		jumpD,
-		equalD,
-		opD,functD,
+		jumpD,jrD,
+		equalD,stallD,
+		instrD,
 		//execute stage
 		memtoregE,
 		alusrcE,regdstE,
 		regwriteE,
 		alucontrolE,
-		flushE,
+		flushE,stallE,
 		//mem stage
-		memtoregM,
+		stallM,memtoregM,
 		regwriteM,
 		aluoutM,writedataM,
 		readdataM,
 		//writeback stage
 		memtoregW,
-		regwriteW
+		regwriteW,
+		hregwriteE,hregwriteM,hregwriteW
 	    );
 	
 endmodule
