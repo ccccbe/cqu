@@ -4,6 +4,7 @@
 
 module alu(
 	input wire[31:0] a,b,
+	
 	input wire[7:0] sel,
 	input wire[4:0] sa,
 	output reg [31:0] result
